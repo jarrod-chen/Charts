@@ -6,19 +6,19 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.TypedValue
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
-import kotlin.math.cos
+import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.min
-import kotlin.math.sin
 
 class PieChart : View {
 
-    private val colors: Array<Long> = arrayOf(
-        0xFF37A2DA, 0xFF32C5E9, 0xFF67E0E3, 0xFF9FE6B8, 0xFFFFDB5C, 0xFFFF9F7F, 0xFFFB7293, 0xFFE062AE,
-        0xFFE690D1, 0xFFE7BCF3, 0xFF9D96F5, 0xFF8378EA, 0xFF96BFFF
+    private val colors: Array<String> = arrayOf(
+        "#37A2DA", "#FF32C5E9", "#FF67E0E3", "#FF9FE6B8", "#FFFFDB5C", "#FFFF9F7F", "#FFFB7293", "#FFE062AE",
+        "#FFE690D1", "#FFE7BCF3", "#FF9D96F5", "#FF8378EA", "#FF96BFFF"
     )
-
     //绘制饼图的初始角度
     private var mStartAngle: Float = 270f
 
@@ -32,6 +32,10 @@ class PieChart : View {
     private var mPaint: Paint = Paint()
 
     private var r: Float = 0f
+    //圆心坐标
+    private var rx: Float = 0f
+    private var ry: Float = 0f
+
 
     private lateinit var mRect: RectF
 
@@ -48,7 +52,8 @@ class PieChart : View {
         mWidth = w - paddingLeft - paddingRight
         mHeight = h - paddingTop - paddingBottom
         r = (min(mWidth, mHeight) / 2 * 0.8).toFloat()
-
+        rx = w / 2f
+        ry = h / 2f
         mRect = RectF(-r, -r, r, r)
     }
 
@@ -90,7 +95,7 @@ class PieChart : View {
         data.forEachIndexed { index, pieData ->
             sumValue += pieData.value
             val i = index % colors.size
-            pieData.color = colors[i].toInt()
+            pieData.color = Color.parseColor(colors[i])
         }
 
         var sumAngle: Float = 0f
@@ -107,5 +112,55 @@ class PieChart : View {
             sumAngle += angle
 
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                val x: Double = (event.x - rx).toDouble()
+                val y: Double = (event.y - ry).toDouble()
+
+                if (x * x + y * y > r * r) {
+                    Log.d("PieChart", "不在圆区域")
+                    mData?.forEachIndexed { index, pieData ->
+                        pieData.color = Color.parseColor(colors[index])
+                    }
+                    invalidate()
+                    return false
+                }
+
+                var angle: Double = 0.0
+                //第一象限
+                if (x > 0 && y < 0) {
+                    angle = atan2((event.x - rx).toDouble(), (ry - event.y).toDouble()) * 180 / PI
+                } else if (x > 0 && y > 0) {
+                    //第二象限
+                    angle = atan2((event.y - ry).toDouble(), (event.x - rx).toDouble()) * 180 / PI + 90
+                } else if (x < 0 && y > 0) {
+                    //第三象限
+                    angle = atan2(rx - event.x, event.y - ry) * 180 / PI + 180
+                } else if (x < 0 && y < 0) {
+                    //第四象限
+                    angle = atan2(ry - event.y, rx - event.x) * 180 / PI + 270
+                }
+
+                mData?.apply {
+                    var countAngle = 0f
+                    forEachIndexed { index, pieData ->
+                        pieData.color = Color.parseColor(colors[index])
+                    }
+                    forEachIndexed { index, pieData ->
+                        countAngle += pieData.angle
+                        if (angle < countAngle) {
+                            pieData.color = Color.parseColor(colors[index]).and(0x80ffffff.toInt())
+                            invalidate()
+                            return@apply
+                        }
+                    }
+                }
+
+            }
+        }
+        return true
     }
 }
