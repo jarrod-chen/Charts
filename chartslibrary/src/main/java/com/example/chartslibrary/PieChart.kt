@@ -9,6 +9,9 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.min
@@ -69,11 +72,11 @@ class PieChart : View {
                 canvas?.drawArc(mRect, mStartAngle, pieData.angle, true, mPaint)
 
                 canvas?.rotate(pieData.angle / 2)
-                canvas?.drawLine(0f, 0f, 0f, -r * 1.1f, mPaint)
+                canvas?.drawLine(0f, -r, 0f, -r * 1.1f, mPaint)
 
                 mPaint.textSize = 42f
                 val textWidth = mPaint.measureText("${pieData.value}")
-                canvas?.drawText("${pieData.value}", -textWidth / 2, -r * 1.1f, mPaint)
+                canvas?.drawText("${pieData.value}", -textWidth / 2, -r * 1.1f - 5, mPaint)
 
                 canvas?.rotate(pieData.angle / 2)
                 currentAngle += pieData.angle
@@ -152,13 +155,17 @@ class PieChart : View {
                     forEachIndexed { index, pieData ->
                         countAngle += pieData.angle
                         if (angle < countAngle) {
-                            pieData.color = Color.parseColor(colors[index]).and(0x80ffffff.toInt())
+                            val colorT = Color.parseColor(colors[index])
+                            //hsv数组 色调 饱和度 亮度
+                            val hsv: FloatArray = floatArrayOf(0f, 0f, 0f)
+                            Color.RGBToHSV(colorT.red, colorT.green, colorT.blue, hsv)
+                            hsv[2] = hsv[2] / 1.2f
+                            pieData.color = Color.HSVToColor(hsv)
                             invalidate()
                             return@apply
                         }
                     }
                 }
-
             }
         }
         return true
