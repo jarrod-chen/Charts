@@ -1,4 +1,4 @@
-package com.example.viewlesson
+package com.jarrod.chartviews
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

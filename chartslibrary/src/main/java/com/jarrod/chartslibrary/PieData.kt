@@ -1,4 +1,4 @@
-package com.example.chartslibrary
+package com.jarrod.chartslibrary
 
 data class PieData (
     var lable: String? = "",

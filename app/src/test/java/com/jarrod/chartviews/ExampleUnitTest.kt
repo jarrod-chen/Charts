@@ -1,4 +1,4 @@
-package com.example.viewlesson
+package com.jarrod.chartviews
 
 import org.junit.Test
 

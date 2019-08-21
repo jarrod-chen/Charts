@@ -1,4 +1,4 @@
-package com.example.chartslibrary
+package com.jarrod.chartslibrary
 
 import android.content.Context
 import android.graphics.Canvas

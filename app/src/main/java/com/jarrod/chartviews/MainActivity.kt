@@ -1,8 +1,8 @@
-package com.example.viewlesson
+package com.jarrod.chartviews
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.chartslibrary.PieData
+import com.jarrod.chartslibrary.PieData
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

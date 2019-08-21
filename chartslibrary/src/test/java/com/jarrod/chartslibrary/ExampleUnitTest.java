@@ -1,4 +1,4 @@
-package com.example.chartslibrary;
+package com.jarrod.chartslibrary;
 
 import org.junit.Test;
 
