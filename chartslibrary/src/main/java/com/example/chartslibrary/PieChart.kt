@@ -67,7 +67,7 @@ class PieChart : View {
             canvas?.translate((mWidth / 2).toFloat(), (mHeight / 2).toFloat())
 
             canvas?.save()
-            it.forEachIndexed { index, pieData ->
+            it.forEach { pieData ->
                 mPaint.color = pieData.color
                 canvas?.drawArc(mRect, mStartAngle, pieData.angle, true, mPaint)
 
